@@ -7,13 +7,13 @@ from matplotlib.colors import hsv_to_rgb
 
 def gaussderiv(img, sigma):
     x = np.array(list(range(math.floor(-3.0 * sigma + 0.5), math.floor(3.0 * sigma + 0.5) + 1)))
-    
+
     G = np.exp(-x ** 2 / (2 * sigma ** 2))
     G = G / np.sum(G)
 
     D = -2 * (x * np.exp(-x ** 2 / (2 * sigma ** 2))) / (np.sqrt(2 * math.pi) * sigma ** 3)
     D = D / (np.sum(np.abs(D)) / 2)
-    
+
     Dx = cv2.sepFilter2D(img, -1, D, G)
     Dy = cv2.sepFilter2D(img, -1, G, D)
 
@@ -25,7 +25,7 @@ def gausssmooth(img, sigma):
 
     G = np.exp(-x ** 2 / (2 * sigma ** 2))
     G = G / np.sum(G)
-    
+
     return cv2.sepFilter2D(img, -1, G, G)
 
 
@@ -72,8 +72,9 @@ def rotate_image(img, angle):
 
 def calculate_derivatives(img1, img2, smoothing, derivation):
     i_t = gausssmooth(img2 - img1, smoothing)
-    i_x_1, i_y_1 = gaussderiv(img1, derivation)
-    # Average the images for better results
-    # i_x_2, i_y_2 = gaussderiv(img2, derivation)
-    
-    return i_x_1, i_y_1, i_t
+    i_x, i_y = gaussderiv(np.divide(np.add(img1, img2), 2), derivation)
+    return i_x, i_y, i_t
+
+
+def sum_kernel(x, N):
+    return cv2.filter2D(x, -1, np.ones((N, N)))
