@@ -2,13 +2,13 @@ import cv2
 import numpy as np
 
 from ex1_utils import calculate_derivatives
+from lucas_kanade import lucas_kanade
 
 
-def horn_schunck(img1, img2, n_iters, l):
+def horn_schunck(img1, img2, n_iters, l, N = None):
     """
     img1 - first image matrix (grayscale)
     img2 - second image matrix (grayscale)
-    n   - size of the neighbourhood (N x N)
     n_iters − number of iterations (try several hundred)
     lmbd − parameter
     """
@@ -19,14 +19,16 @@ def horn_schunck(img1, img2, n_iters, l):
     i_y_2 = np.square(i_y)
     
     l_d = np.matrix([[0, 0.25, 0], [0.25, 0, 0.25], [0, 0.25, 0]])
-    u = np.zeros(img1.shape)
-    v = np.zeros(img2.shape)
+    
+    if N:
+        u, v = lucas_kanade(img1, img2, N)
+    else:
+        u, v = np.zeros(img1.shape), np.zeros(img2.shape)
     
     D = np.add(np.add(l, i_x_2), i_y_2)
     
     for _ in range(n_iters):
-        u_a = cv2.filter2D(u, -1, l_d)
-        v_a = cv2.filter2D(v, -1, l_d)
+        u_a, v_a = cv2.filter2D(u, -1, l_d), cv2.filter2D(v, -1, l_d)
         
         P = np.add(
                 np.add(

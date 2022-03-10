@@ -42,6 +42,18 @@ def draw_optical_flow(image_1, image_2):
     plt.show()
 
 
+def time_optical_flow(path_1, path_2):
+    image_1 = cv2.imread(path_1, cv2.IMREAD_GRAYSCALE).astype(np.float32)
+    image_2 = cv2.imread(path_2, cv2.IMREAD_GRAYSCALE).astype(np.float32)
+
+    draw_optical_flow(image_1, image_2)
+
+
+def draw_optical_flow(image_1, image_2):
+    U_lk, V_lk = lucas_kanade(image_1, image_2, 3)
+    U_hs, V_hs = horn_schunck(image_1, image_2, 1000, 0.5)
+
+
 if __name__ == '__main__':
     im1 = np.random.rand(200, 200).astype(np.float32)
     im2 = im1.copy()
