@@ -6,7 +6,7 @@ from lucas_kanade import lucas_kanade
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def horn_schunck(img1, img2, n_iters, lmbd, N=None):
+def horn_schunck(img1, img2, n_iters, lmbd, N=None, debug=False):
     """
     img1 - first image matrix (grayscale)
     img2 - second image matrix (grayscale)
@@ -36,7 +36,7 @@ def horn_schunck(img1, img2, n_iters, lmbd, N=None):
         u_sim = round(np.sum(cosine_similarity(u, u_a)) / matrixElements, 8)
         v_sim = round(np.sum(cosine_similarity(v, v_a)) / matrixElements, 8)
 
-        if i % 100 == 0:
+        if i % 100 == 0 and debug:
             print(i, u_sim, v_sim)
 
         u_a, v_a = cv2.filter2D(u, -1, l_d), cv2.filter2D(v, -1, l_d)

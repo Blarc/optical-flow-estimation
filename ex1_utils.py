@@ -59,7 +59,7 @@ def show_flow(U, V, ax, type='field', set_aspect=False):
                                  np.expand_dims(np.ones(angle.shape, dtype=np.float32), -1)), axis=-1)
         ax.imshow(hsv_to_rgb(im_hsv))
     else:
-        print('Error: unknown optical flow visualization type.')
+        print(f'Error: unknown optical flow visualization type: {type}.')
         exit(-1)
 
 
@@ -72,7 +72,7 @@ def rotate_image(img, angle):
 
 def calculate_derivatives(img1, img2, smoothing, derivation):
     i_t = gausssmooth(img2 - img1, smoothing)
-    i_x, i_y = gaussderiv(np.divide(np.add(img1, img2), 2), derivation)
+    i_x, i_y = gaussderiv(gausssmooth(np.divide(img1 + img2, 2), smoothing), derivation)
     return i_x, i_y, i_t
 
 

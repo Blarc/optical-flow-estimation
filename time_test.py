@@ -10,33 +10,67 @@ from lucas_kanade import lucas_kanade
 np.seterr(divide='ignore', invalid='ignore')
 
 
-def time_optical_flow_path(path_1, path_2):
+def time_optical_flow_path(path_1, path_2, kernel_size=10, iterations=1000):
     image_1 = cv2.imread(path_1, cv2.IMREAD_GRAYSCALE).astype(np.float32)
     image_2 = cv2.imread(path_2, cv2.IMREAD_GRAYSCALE).astype(np.float32)
 
-    time_optical_flow(image_1, image_2)
+    time_optical_flow(image_1, image_2, kernel_size, iterations)
 
 
-def time_optical_flow(image_1, image_2):
-    lk_start_time = time.time()
-    lucas_kanade(image_1, image_2, 3)
-    lk_time = time.time() - lk_start_time
+def time_optical_flow(image_1, image_2, kernel_size=10, iterations=1000):
+    lk_start_time = time.process_time()
+    lucas_kanade(image_1, image_2, kernel_size)
+    lk_time = time.process_time() - lk_start_time
 
-    hs_start_time = time.time()
-    horn_schunck(image_1, image_2, 1000, 0.5)
-    hs_time = time.time() - hs_start_time
+    hs_start_time = time.process_time()
+    horn_schunck(image_1, image_2, iterations, 0.5)
+    hs_time = time.process_time() - hs_start_time
 
-    lk_hs_start_time = time.time()
-    horn_schunck(image_1, image_2, 1000, 0.5, 3)
-    lk_hs_time = time.time() - lk_hs_start_time
+    lk_hs_start_time = time.process_time()
+    horn_schunck(image_1, image_2, iterations, 0.5, kernel_size)
+    lk_hs_time = time.process_time() - lk_hs_start_time
 
     print('-' * 75)
-    print(f'Lucas-Kanade:                      {lk_time}')
-    print(f'Horn-Shunck:                       {hs_time}')
-    print(f'Horn-Shunck (initalized with l-k): {lk_hs_time}')
+    print(f'Lucas-Kanade:                      {lk_time * 1000}')
+    print(f'Horn-Shunck:                       {hs_time * 1000}')
+    print(f'Horn-Shunck (initalized with l-k): {lk_hs_time * 1000}')
 
 
 if __name__ == '__main__':
-    time_optical_flow_path('disparity/cporta_left.png', 'disparity/cporta_right.png')
-    time_optical_flow_path('disparity/office_left.png', 'disparity/office_right.png')
-    time_optical_flow_path('disparity/office2_left.png', 'disparity/office2_right.png')
+    time_optical_flow_path('collision/00000055.jpg', 'collision/00000056.jpg', kernel_size=10, iterations=100)
+    time_optical_flow_path('collision/00000055.jpg', 'collision/00000056.jpg', kernel_size=50, iterations=500)
+    time_optical_flow_path('collision/00000055.jpg', 'collision/00000056.jpg', kernel_size=100, iterations=1000)
+    time_optical_flow_path('lab2/001.jpg', 'lab2/002.jpg', kernel_size=10, iterations=100)
+    time_optical_flow_path('lab2/001.jpg', 'lab2/002.jpg', kernel_size=50, iterations=500)
+    time_optical_flow_path('lab2/001.jpg', 'lab2/002.jpg', kernel_size=100, iterations=1000)
+
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 15.625
+    # Horn - Shunck: 1796.875
+    # Horn - Shunck(initalized
+    # with l - k): 953.125
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 31.25
+    # Horn - Shunck: 8656.25
+    # Horn - Shunck(initalized
+    # with l - k): 4328.125
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 15.625
+    # Horn - Shunck: 13640.625
+    # Horn - Shunck(initalized
+    # with l - k): 8171.875
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 15.625
+    # Horn - Shunck: 4265.625
+    # Horn - Shunck(initalized
+    # with l - k): 1531.25
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 46.875
+    # Horn - Shunck: 20218.75
+    # Horn - Shunck(initalized
+    # with l - k): 10359.375
+    # ---------------------------------------------------------------------------
+    # Lucas - Kanade: 78.125
+    # Horn - Shunck: 43343.75
+    # Horn - Shunck(initalized
+    # with l - k): 16484.375
